@@ -1,4 +1,12 @@
-const fastify = require('fastify')({ logger: true })
+const fs = require('fs')
+const path = require("path");
+const fastify = require('fastify')({
+    logger: true,
+    https: {
+        key: fs.readFileSync(path.join(__dirname, 'server.key')),
+        cert: fs.readFileSync(path.join(__dirname,  'server.crt'))
+    }
+})
 
 fastify.register(require('@fastify/mongodb'),{
     forceClose: true,
