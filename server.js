@@ -20,6 +20,29 @@ fastify.register(require('@fastify/jwt'), {
     secret: 'b1gOne5ecretS'
 })
 
+fastify.addHook('onRequest', (req, reply, done)=>{
+    if(req.url.indexOf('/pvt/') != -1){
+        let authHeader;
+        for(let header of Object.keys(req.headers) ) {
+            console.log(header.toUpperCase())
+            if(header.toUpperCase() === 'AUTHORIZATION') {
+                authHeader = req.headers[header]
+                console.log(authHeader.split(' '))
+                const payload = authHeader.split(' ')[1]
+                if(!payload)
+                    return reply.status(404).send("Unauthorized")
+                const token_obj = fastify.jwt.verify(payload)
+                req.token = token_obj.token
+                done()
+                return
+
+            }
+        }
+
+    }
+    done()
+})
+
 fastify.register(require('./routes/login'), {prefix: 'api/clients'})
 fastify.register(require('./routes/hosts'), {prefix: 'api/pvt/hosts'})
 
