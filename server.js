@@ -30,8 +30,10 @@ fastify.addHook('onRequest', (req, reply, done)=>{
                 console.log(authHeader.split(' '))
                 const payload = authHeader.split(' ')[1]
                 if(!payload)
-                    return reply.status(404).send("Unauthorized")
+                    return reply.status(401).send("Unauthorized")
                 const token_obj = fastify.jwt.verify(payload)
+                if(!token_obj)
+                    return reply.status(401).send("Invalid token")
                 req.token = token_obj.token
                 done()
                 return

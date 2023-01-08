@@ -16,14 +16,13 @@ module.exports = function (fastify, opts, done) {
 
         return reply.send(doc)
         try{
-            const {temp, cpu, hdd, ram} = req.body;
-            const host_id = req.host_id
-
+            const {host_id, temp, cpu, hdd, ram} = req.body;
+            const client_id = req.client_id
             const hosts = fastify.mongo.db.collection('hosts')
             const configs = fastify.mongo.db.collection('hosts')
 
             await hosts.updateOne({host_id: host_id}, {$set: {temp: temp, cpu: cpu, hdd: hdd, ram: ram}})
-            const config = await configs.findOne({host_id: host_id})
+            const config = await configs.findOne({client_id: client_id, host_id: host_id})
             const doc = new YAML.Document();
             doc.contents = config;
         }catch (e) {
@@ -37,6 +36,17 @@ module.exports = function (fastify, opts, done) {
             const hosts = await hosts_coll.find({client_id: req.client_id}).toArray()
             console.log(hosts)
             return reply.send(hosts)
+        }catch (e) {
+            return reply.status(500).send('Bad response')
+        }
+    })
+
+    fastify.post('/update', async (req, reply)=>{
+        const client_id = req.client_id
+        try{
+            const hosts_coll = fastify.mongo.db.collection('hosts')
+            await hosts_coll.updateOne({client_id: client_id, host_id: req.body.host_id}, req.body)
+            return reply.send({success: true})
         }catch (e) {
             return reply.status(500).send('Bad response')
         }
