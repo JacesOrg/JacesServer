@@ -31,6 +31,7 @@ module.exports = function (fastify, opts, done) {
 
     fastify.get('/get', async (req, reply)=>{
         const hosts_coll = fastify.mongo.db.collection('hosts')
+        console.log(req.client_id)
         try{
             const hosts = await hosts_coll.find({client_id: req.client_id}).toArray()
             console.log(hosts)
