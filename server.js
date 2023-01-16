@@ -26,17 +26,23 @@ fastify.addHook('onRequest', (req, reply, done)=>{
         for(let header of Object.keys(req.headers) ) {
             console.log(header.toUpperCase())
             if(header.toUpperCase() === 'AUTHORIZATION') {
-                authHeader = req.headers[header]
-                console.log(authHeader.split(' '))
-                const payload = authHeader.split(' ')[1]
-                if(!payload)
-                    return reply.status(401).send("Unauthorized")
-                const token_obj = fastify.jwt.verify(payload)
-                if(!token_obj)
-                    return reply.status(401).send("Invalid token")
-                req.token = token_obj.token
-                done()
-                return
+                try{
+                    authHeader = req.headers[header]
+                    console.log(authHeader.split(' '))
+                    const payload = authHeader.split(' ')[1]
+                    if(!payload)
+                        return reply.status(401).send("Unauthorized")
+                    const token_obj = fastify.jwt.verify(payload)
+                    if(!token_obj)
+                        return reply.status(401).send("Invalid token")
+                    req.token = token_obj.token
+                    done()
+                    return
+                }catch (e) {
+                    console.log(e)
+                    return reply.status(401).send("Unathorized")
+                }
+
 
             }
         }
@@ -50,7 +56,7 @@ fastify.register(require('./routes/hosts'), {prefix: 'api/pvt/hosts'})
 
 const start = async () => {
     try {
-        await fastify.listen({ port: 3000 })
+        await fastify.listen({ port: 3000, host:  "0.0.0.0"})
     } catch (err) {
         fastify.log.error(err)
         process.exit(1)
