@@ -35,6 +35,7 @@ fastify.addHook('onRequest', (req, reply, done)=>{
                     const token_obj = fastify.jwt.verify(payload)
                     if(!token_obj)
                         return reply.status(401).send("Invalid token")
+                    console.log(token_obj)
                     req.token = token_obj.token
                     done()
                     return
