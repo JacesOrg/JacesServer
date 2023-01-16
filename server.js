@@ -36,7 +36,7 @@ fastify.addHook('onRequest', (req, reply, done)=>{
                     if(!token_obj)
                         return reply.status(401).send("Invalid token")
                     console.log(token_obj)
-                    req.token = token_obj.token
+                    req.client_id = token_obj.client_id
                     done()
                     return
                 }catch (e) {
