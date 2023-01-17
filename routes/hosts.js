@@ -62,6 +62,16 @@ module.exports = function (fastify, opts, done) {
             return reply.status(500).send('Bad response')
         }
     })
+    fastify.post('/updatebyid', async (req, reply)=>{
+        const client_id = req.client_id
+        try{
+            const hosts_coll = fastify.mongo.db.collection('hosts')
+            await hosts_coll.updateOne({client_id: client_id, _id: new fastify.mongo.ObjectId(req.body._id)}, req.body)
+            return reply.send({success: true})
+        }catch (e) {
+            return reply.status(500).send('Bad response')
+        }
+    })
 
     done()
 }
