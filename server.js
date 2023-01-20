@@ -54,6 +54,7 @@ fastify.addHook('onRequest', (req, reply, done)=>{
 
 fastify.register(require('./routes/login'), {prefix: 'api/clients'})
 fastify.register(require('./routes/hosts'), {prefix: 'api/pvt/hosts'})
+fastify.register(require('./routes/configs'), {prefix: 'api/pvt/configs'})
 
 const start = async () => {
     try {
