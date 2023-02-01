@@ -13,7 +13,7 @@ const fastify = require('fastify')({
 
 fastify.register(require('@fastify/mongodb'),{
     forceClose: true,
-    url: 'mongodb://localhost:27017/jaces'
+    url: 'mongodb://jacesadm:1amJacesUser@localhost:27017/jaces'
 })
 
 fastify.register(require('@fastify/jwt'), {
