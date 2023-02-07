@@ -26,9 +26,9 @@ module.exports = function (fastify, opts, done) {
             stat_obj.created = new Date()
             stat_obj.host_id = new fastify.mongo.ObjectId(host_id)
             await statColl.insertOne(stat_obj)
-            return req.reply({success: true})
+            return reply.send({success: true})
         } catch (error) {
-            return req.reply("")
+            return reply.send({success: false, message:  error.message})
         }
         
     })
