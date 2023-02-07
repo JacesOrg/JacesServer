@@ -30,7 +30,7 @@ module.exports = function (fastify, opts, done) {
         } catch (error) {
             return reply.send({success: false, message:  error.message})
         }
-        
+
     })
 
     fastify.post('/logs/set/:hostid', async (req, reply)=>{
@@ -50,7 +50,7 @@ module.exports = function (fastify, opts, done) {
         } catch (error) {
             return reply.send({success: false, message:  error.message})
         }
-        
+
     })
 
     fastify.get('/logs/get', async (req, reply)=>{
@@ -62,9 +62,11 @@ module.exports = function (fastify, opts, done) {
             if(!host)
                 return reply.status(404).send({success: false, message: 'Host with specified id not found'})
             const logsColl = fastify.mongo.db.collection('hosts_logs');
-            const logs = await logsColl.find({hostid: })
+            const logs = await logsColl.find({hostid: host_id}).sort({created: -1}).toArray()
+            return reply.send(logs)
         } catch (error) {
-            
+            console.log(error)
+            return reply.send({success: false, message:  error.message})
         }
     })
 
