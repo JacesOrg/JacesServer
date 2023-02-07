@@ -13,6 +13,26 @@ module.exports = function (fastify, opts, done) {
         }
     })
 
+    fastify.post('/stats/set/:hostid', async (req, reply)=>{
+        try {
+            const host_id = req.params.hostid;
+            const hostColl = fastify.mongo.db.collection('hosts');
+            const host = await hostColl.findOne({_id: new fastify.mongo.ObjectId(host_id)})
+            console.log(host);
+            if(!host)
+                return reply.status(404).send({success: false, message: 'Host with specified id not found'})
+            const statColl = fastify.mongo.db.collection('hosts_stat');
+            const stat_obj = req.body
+            stat_obj.created = new Date()
+            stat_obj.host_id = new fastify.mongo.ObjectId(host_id)
+            await statColl.insertOne(stat_obj)
+            return req.reply({success: true})
+        } catch (error) {
+            return req.reply("")
+        }
+        
+    })
+
     fastify.post('/sync', async (req, reply)=>{
         try{
             const {host_id, temp, cpu, hdd, ram} = req.body;
