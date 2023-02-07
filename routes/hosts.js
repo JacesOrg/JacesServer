@@ -5,7 +5,8 @@ module.exports = function (fastify, opts, done) {
         try{
             const {host_id} = req.body
             const hosts = fastify.mongo.db.collection('hosts')
-            await hosts.insertOne({host_id: host_id})
+            let insResult = await hosts.insertOne({host_id: host_id})
+            console.log(insResult);
             return reply.send({success: true})
         }catch (e) {
             return reply.status(500).send('Bad response')
