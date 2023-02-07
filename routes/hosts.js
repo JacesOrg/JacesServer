@@ -33,6 +33,41 @@ module.exports = function (fastify, opts, done) {
         
     })
 
+    fastify.post('/logs/set/:hostid', async (req, reply)=>{
+        try {
+            const host_id = req.params.hostid;
+            const hostColl = fastify.mongo.db.collection('hosts');
+            const host = await hostColl.findOne({_id: new fastify.mongo.ObjectId(host_id)})
+            console.log(host);
+            if(!host)
+                return reply.status(404).send({success: false, message: 'Host with specified id not found'})
+            const logsColl = fastify.mongo.db.collection('hosts_logs');
+            const stat_obj = req.body
+            stat_obj.created = new Date()
+            stat_obj.host_id = new fastify.mongo.ObjectId(host_id)
+            await logsColl.insertOne(stat_obj)
+            return reply.send({success: true})
+        } catch (error) {
+            return reply.send({success: false, message:  error.message})
+        }
+        
+    })
+
+    fastify.get('/logs/get', async (req, reply)=>{
+        try {
+            const host_id = req.query.hostid;
+            const hostColl = fastify.mongo.db.collection('hosts');
+            const host = await hostColl.findOne({_id: new fastify.mongo.ObjectId(host_id)})
+            console.log(host);
+            if(!host)
+                return reply.status(404).send({success: false, message: 'Host with specified id not found'})
+            const logsColl = fastify.mongo.db.collection('hosts_logs');
+            const logs = await logsColl.find({hostid: })
+        } catch (error) {
+            
+        }
+    })
+
     fastify.post('/sync', async (req, reply)=>{
         try{
             const {host_id, temp, cpu, hdd, ram} = req.body;
