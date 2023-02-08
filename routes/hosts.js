@@ -4,8 +4,12 @@ module.exports = function (fastify, opts, done) {
     fastify.post('/register', async (req, reply)=>{
         try{
             const {host_id} = req.body
+            const hostInfo = req.body
+            hostInfo.configs = []
+            hostInfo.client_id = req.client_id
+
             const hosts = fastify.mongo.db.collection('hosts')
-            let insResult = await hosts.insertOne({host_id: host_id})
+            let insResult = await hosts.insertOne(hostInfo)
             console.log(insResult);
             return reply.send({success: true, id: insResult.insertedId})
         }catch (e) {

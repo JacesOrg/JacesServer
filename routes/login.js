@@ -25,6 +25,7 @@ module.exports = function (fastify, opts, done) {
             await clients.insertOne({client_id: client_id})
             return reply.send({success: true})
         }catch (e) {
+            console.log(e);
             return reply.status(500).send('Internal server error')
         }
     } )
