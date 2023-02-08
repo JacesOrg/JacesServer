@@ -96,6 +96,15 @@ module.exports = function (fastify, opts, done) {
         console.log(req.client_id)
         try{
             const hosts = await hosts_coll.find({client_id: req.client_id}).toArray()
+            for(let i =0; i < hosts.length; i++)
+                if(hosts[i].stats){
+                    let hostInfo = ""
+                    for(let el of Object.keys(hosts[i].stats))
+                        hostInfo += hosts[i].stats[el] + ', '
+                    hostInfo = hostInfo.slice(0, hostInfo.length-2)
+                    hosts[i].hostInfo = hostInfo
+
+                }
             console.log(hosts)
             return reply.send(hosts)
         }catch (e) {
