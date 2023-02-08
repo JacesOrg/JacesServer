@@ -15,7 +15,10 @@ const fastify = require('fastify')({
     https: https
 })
 
-fastify.register(require('@fastify/multipart'))
+fastify.register(require('@fastify/static'), {
+    root: path.join(require('os').homedir(), '.containers'),
+    prefix: '/containers/', // optional: default '/'
+  })
 
 fastify.register(require('@fastify/mongodb'),{
     forceClose: true,

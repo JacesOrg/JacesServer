@@ -90,45 +90,13 @@ module.exports = function (fastify, opts, done) {
         }
     })
 
-    fastify.post('/upload', async (req, reply)=>{
-        try {
-            const data = await req.file()
-            console.log(req.body);
-            console.log(data);
-            const filename = path.join(require('os').homedir(), '.containers', data.filename)
-            const storedFile = fs.createWriteStream(filename)
-            await pump(data.file, storedFile)
-            const uploadsColl = fastify.mongo.db.collection('files')
-            await uploadsColl.insertOne({filename: data.filename, path: filename, created: new Date()})
-            return { success: true }
-        } catch (error) {
-            console.log(error);
-            return reply.status(500).send({success: false, message: error.message})
-        }
-        
-    })
-
-    fastify.post('/uploaddetails', async(req, reply)=>{
-        try {
-            const {filename, image} = req.body
-            const uploadsColl = fastify.mongo.db.collection('files')
-            await uploadsColl.updateOne({filename: filename}, {$set: {image: image}})
-            return { success: true }
-        } catch (error) {
-            console.log(error);
-            return reply.status(500).send({success: false, message: error.message})
-        }
-    })
-
     fastify.get('/download', async (req, reply)=>{
         
         try {
             const filesColl = fastify.mongo.db.collection('files')
             const {image} = req.query
             const fileObj = await filesColl.find({image: image}).sort({created: -1}).toArray()
-            const stream = require('fs').createReadStream(fileObj[0].path)
-            reply.header('Content-Disposition','attachment; filename='+fileObj[0].filename)
-            reply.send(stream).type('application/octet-stream ').code(200)
+            reply.sendFile(fileObj[0].filename)
         } catch (error) {
             console.log(error);
             return reply.status(500).send({success: false, message: error.message})
