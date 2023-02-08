@@ -1,6 +1,10 @@
 const fs = require('fs')
 const path = require("path");
+const dotenv = require("dotenv")
 let https;
+
+dotenv.config()
+
 if (fs.existsSync(path.join(__dirname, 'server.key')))
     https = {
         key: fs.readFileSync(path.join(__dirname, 'server.key')),
@@ -11,9 +15,11 @@ const fastify = require('fastify')({
     https: https
 })
 
+fastify.register(require('@fastify/multipart'))
+
 fastify.register(require('@fastify/mongodb'),{
     forceClose: true,
-    url: 'mongodb://jacesadm:1amJacesUser@localhost:27017/jaces'
+    url: `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}/${process.env.MONGO_DB}`
 })
 
 fastify.register(require('@fastify/jwt'), {

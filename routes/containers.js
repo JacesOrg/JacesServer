@@ -1,3 +1,9 @@
+const fs=require('fs')
+const {pipeline} = require('stream')
+const util = require('util')
+const pump = util.promisify(pipeline)
+const path = require('path')
+
 module.exports = function (fastify, opts, done) {
 
     fastify.post('/stat/set/:container_id', async (req, reply)=>{
@@ -35,7 +41,7 @@ module.exports = function (fastify, opts, done) {
         try{
             const host_id = req.params.host_id;
             const actionColl = fastify.mongo.db.collection('actions')
-            const actions = await actionColl.find({client_id: req.client_id, host_id: host_id}).sort({created: 1}).toArray()
+            const actions = await actionColl.find({client_id: req.client_id, host_id: host_id, status: "NEW"}).sort({created: 1}).toArray()
             return reply.send(actions)
         }catch (e) {
             console.log(e)
@@ -49,6 +55,7 @@ module.exports = function (fastify, opts, done) {
             const action = req.body
             action.client_id = req.client_id
             action.host_id = host_id
+            action.status = "NEW"
             const actionColl = fastify.mongo.db.collection('actions')
             const actions = await actionColl.insertOne(action)
             return reply.send({success: true, id: actions.insertedId})
@@ -83,5 +90,49 @@ module.exports = function (fastify, opts, done) {
         }
     })
 
+    fastify.post('/upload', async (req, reply)=>{
+        try {
+            const data = await req.file()
+            console.log(req.body);
+            console.log(data);
+            const filename = path.join(require('os').homedir(), '.containers', data.filename)
+            const storedFile = fs.createWriteStream(filename)
+            await pump(data.file, storedFile)
+            const uploadsColl = fastify.mongo.db.collection('files')
+            await uploadsColl.insertOne({filename: data.filename, path: filename, created: new Date()})
+            return { success: true }
+        } catch (error) {
+            console.log(error);
+            return reply.status(500).send({success: false, message: error.message})
+        }
+        
+    })
+
+    fastify.post('/uploaddetails', async(req, reply)=>{
+        try {
+            const {filename, image} = req.body
+            const uploadsColl = fastify.mongo.db.collection('files')
+            await uploadsColl.updateOne({filename: filename}, {$set: {image: image}})
+            return { success: true }
+        } catch (error) {
+            console.log(error);
+            return reply.status(500).send({success: false, message: error.message})
+        }
+    })
+
+    fastify.get('/dowbload', async (req, reply)=>{
+        
+        try {
+            const filesColl = fastify.mongo.db.collection('files')
+            const {image} = req.query
+            const fileObj = await filesColl.find({image: image}).sort({created: -1}).toArray()
+            const stream = require('fs').createReadStream(fileObj[0].path)
+            reply.header('Content-Disposition','attachment; filename='+fileObj[0].filename)
+            reply.send(stream)
+        } catch (error) {
+            console.log(error);
+            return reply.status(500).send({success: false, message: error.message})
+        } 
+    })
     done()
 }
