@@ -74,7 +74,7 @@ module.exports = function (fastify, opts, done) {
         }
     })
 
-    fastify.post('/sync', async (req, reply)=>{
+    fastify.get('/sync', async (req, reply)=>{
         try{
             const {host_id} = req.body;
             const hostsColl = fastify.mongo.db.collection('hosts')
