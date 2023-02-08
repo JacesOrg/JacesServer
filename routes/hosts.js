@@ -76,7 +76,7 @@ module.exports = function (fastify, opts, done) {
 
     fastify.get('/sync', async (req, reply)=>{
         try{
-            const {host_id} = req.body;
+            const {host_id} = req.query;
             const hostsColl = fastify.mongo.db.collection('hosts')
             const hosts = await hostsColl.findOne({_id: new fastify.mongo.Object(host_id)})            
             return reply.send(hosts.configs)
