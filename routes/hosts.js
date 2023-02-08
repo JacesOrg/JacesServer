@@ -102,7 +102,7 @@ module.exports = function (fastify, opts, done) {
                     for(let el of Object.keys(hosts[i].stats))
                         hostInfo += hosts[i].stats[el] + ', '
                     hostInfo = hostInfo.slice(0, hostInfo.length-2)
-                    hosts[i].hostInfo = hostInfo
+                    hosts[i].info = hostInfo
 
                 }
             console.log(hosts)
