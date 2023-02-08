@@ -97,7 +97,7 @@ module.exports = function (fastify, opts, done) {
             const {image} = req.query
             const fileObj = await filesColl.find({image: image}).sort({created: -1}).toArray()
             console.log(fileObj);
-            reply.sendFile(fileObj[0].filename)
+            return reply.sendFile(fileObj[0].filename)
         } catch (error) {
             console.log(error);
             return reply.status(500).send({success: false, message: error.message})
