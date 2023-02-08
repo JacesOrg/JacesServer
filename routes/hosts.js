@@ -81,6 +81,7 @@ module.exports = function (fastify, opts, done) {
             const hosts = await hostsColl.findOne({_id: new fastify.mongo.Object(host_id)})            
             return reply.send(hosts.configs)
         }catch (e) {
+            console.log(e);
             return reply.status(500).send('Bad response')
         }
     })
