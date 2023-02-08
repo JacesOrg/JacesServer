@@ -76,16 +76,11 @@ module.exports = function (fastify, opts, done) {
 
     fastify.post('/sync', async (req, reply)=>{
         try{
-            const {host_id, temp, cpu, hdd, ram} = req.body;
+            const {host_id} = req.body;
             const client_id = req.client_id
-            const hosts = fastify.mongo.db.collection('hosts')
-            const configs = fastify.mongo.db.collection('hosts')
-
-            await hosts.updateOne({host_id: host_id}, {$set: {temp: temp, cpu: cpu, hdd: hdd, ram: ram}})
-            const config = await configs.findOne({client_id: client_id, host_id: host_id})
-            const doc = new YAML.Document();
-            doc.contents = config;
-            return reply.send(doc)
+            const hostsColl = fastify.mongo.db.collection('hosts')
+            const hosts = await hostsColl.findOne({client_id: client_id, host_id: host_id})            
+            return reply.send(hosts.configs)
         }catch (e) {
             return reply.status(500).send('Bad response')
         }
