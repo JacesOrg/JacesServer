@@ -77,9 +77,8 @@ module.exports = function (fastify, opts, done) {
     fastify.post('/sync', async (req, reply)=>{
         try{
             const {host_id} = req.body;
-            const client_id = req.client_id
             const hostsColl = fastify.mongo.db.collection('hosts')
-            const hosts = await hostsColl.findOne({client_id: client_id, host_id: host_id})            
+            const hosts = await hostsColl.findOne({_id: new fastify.mongo.Object(host_id)})            
             return reply.send(hosts.configs)
         }catch (e) {
             return reply.status(500).send('Bad response')
