@@ -128,7 +128,7 @@ module.exports = function (fastify, opts, done) {
             const fileObj = await filesColl.find({image: image}).sort({created: -1}).toArray()
             const stream = require('fs').createReadStream(fileObj[0].path)
             reply.header('Content-Disposition','attachment; filename='+fileObj[0].filename)
-            reply.send(stream)
+            reply.send(stream).type('application/octet-stream ').code(200)
         } catch (error) {
             console.log(error);
             return reply.status(500).send({success: false, message: error.message})
