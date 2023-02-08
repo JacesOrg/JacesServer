@@ -53,6 +53,7 @@ fastify.addHook('onRequest', (req, reply, done)=>{
 
             }
         }
+        return reply.status(401).send("Unathorized")
 
     }
     done()

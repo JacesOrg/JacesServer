@@ -31,7 +31,6 @@ fastify.register(require('@fastify/jwt'), {
 })
 
 fastify.addHook('onRequest', (req, reply, done)=>{
-    if(req.url.indexOf('/upload') != -1){
         let authHeader;
         for(let header of Object.keys(req.headers) ) {
             console.log(header.toUpperCase())
@@ -57,8 +56,7 @@ fastify.addHook('onRequest', (req, reply, done)=>{
 
             }
         }
-
-    }
+        return reply.status(401).send("Unathorized")
     done()
 })
 
