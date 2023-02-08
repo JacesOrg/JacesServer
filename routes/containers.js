@@ -120,7 +120,7 @@ module.exports = function (fastify, opts, done) {
         }
     })
 
-    fastify.get('/dowbload', async (req, reply)=>{
+    fastify.get('/download', async (req, reply)=>{
         
         try {
             const filesColl = fastify.mongo.db.collection('files')
