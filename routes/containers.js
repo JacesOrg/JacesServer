@@ -11,11 +11,12 @@ module.exports = function (fastify, opts, done) {
             const container_id = req.params.container_id;
             const containerColl = fastify.mongo.db.collection('containers')
             const stat = req.body
+            stat.created = new Date()
 
-            const cont = await containerColl.findOne({client_id: req.client_id, container_id: container_id})
-            if(!cont)
-                return reply.status(404).send({success: false, message: 'Container not found'})
-            await containerColl.updateOne({client_id: req.client_id, container_id: container_id}, {$set: stat})
+            // const cont = await containerColl.findOne({client_id: req.client_id, container_id: container_id})
+            // if(!cont)
+            //     return reply.status(404).send({success: false, message: 'Container not found'})
+            await containerColl.updateOne({client_id: req.client_id, container_id: container_id}, {$set: stat}, {upsert: true})
         }catch (e) {
             console.log(e)
             return reply.send({success: false, message:  e.message})
