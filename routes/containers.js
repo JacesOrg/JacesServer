@@ -111,7 +111,7 @@ module.exports = function (fastify, opts, done) {
         try {
             const container_id = req.params.container_id;
             const containerColl = fastify.mongo.db.collection('containers_logs') 
-            await containerColl.updateOne({container_id: container_id}, {$set: log}, {upsert: true})
+            await containerColl.updateOne({container_id: container_id}, {$set:{log: log}}, {upsert: true})
             return reply.send({success: true})
         } catch (error) {
             console.log(error);
