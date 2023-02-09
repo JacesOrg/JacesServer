@@ -96,6 +96,7 @@ module.exports = function (fastify, opts, done) {
             const filesColl = fastify.mongo.db.collection('files')
             const {image} = req.query
             const fileObj = await filesColl.find({image: image}).sort({created: -1}).toArray()
+            reply.set('Content-Disposition', fileObj[0].filename)
             return reply.sendFile(fileObj[0].filename)
         } catch (error) {
             console.log(error);
