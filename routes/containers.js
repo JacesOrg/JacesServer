@@ -17,6 +17,7 @@ module.exports = function (fastify, opts, done) {
             // if(!cont)
             //     return reply.status(404).send({success: false, message: 'Container not found'})
             await containerColl.updateOne({client_id: req.client_id, container_id: container_id}, {$set: stat}, {upsert: true})
+            return reply.send({success: true})
         }catch (e) {
             console.log(e)
             return reply.send({success: false, message:  e.message})
