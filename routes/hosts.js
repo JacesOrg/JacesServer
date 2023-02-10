@@ -112,6 +112,7 @@ module.exports = function (fastify, opts, done) {
             console.log(hosts)
             return reply.send(hosts)
         }catch (e) {
+            console.log(e);
             return reply.status(500).send('Bad response')
         }
     })
