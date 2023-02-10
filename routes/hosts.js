@@ -105,7 +105,7 @@ module.exports = function (fastify, opts, done) {
                     if(container)
                         hosts[i].configs[k].status = container.status
                 }
-                if(host_stat){
+                if(host_stat && host_stat.length > 0){
                     console.log("🚀 ~ file: hosts.js:106 ~ fastify.get ~ host_stat", host_stat)
                     hosts_stat = host_stat[0]
                     console.log("🚀 ~ file: hosts.js:108 ~ fastify.get ~ host_stat", host_stat)
