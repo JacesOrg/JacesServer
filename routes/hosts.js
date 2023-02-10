@@ -98,7 +98,9 @@ module.exports = function (fastify, opts, done) {
                 console.log("🚀 ~ file: hosts.js:98 ~ fastify.get ~ host_stat", host_stat)
                 
                 for(let k=0; k < hosts[i].configs.length; k ++){ 
+                    console.log("🚀 ~ file: hosts.js:102 ~ fastify.get ~ hosts[i].configs[k].id", hosts[i].configs[k].id)
                     const container = await containersColl.findOne({container_id: hosts[i].configs[k].id, client_id: req.client_id})
+                    
                     console.log("🚀 ~ file: hosts.js:102 ~ fastify.get ~ container", container)
                     if(container)
                         hosts[i].configs[k].status = container.status
