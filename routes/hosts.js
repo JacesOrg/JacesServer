@@ -95,13 +95,18 @@ module.exports = function (fastify, opts, done) {
             
             for(let i =0; i < hosts.length; i++){
                 const host_stat = await hosts_stats_coll.find({host_id: new fastify.mongo.ObjectId(hosts[i]._id)}).sort({created: -1}).limit(1).toArray()
-                for(let k=0; k < hosts[i].configs.length; k ++){
+                console.log("🚀 ~ file: hosts.js:98 ~ fastify.get ~ host_stat", host_stat)
+                
+                for(let k=0; k < hosts[i].configs.length; k ++){ 
                     const container = await containersColl.findOne({container_id: hosts[i].configs[k].id, client_id: req.client_id})
+                    console.log("🚀 ~ file: hosts.js:102 ~ fastify.get ~ container", container)
                     if(container)
                         hosts[i].configs[k].status = container.status
                 }
                 if(host_stat){
+                    console.log("🚀 ~ file: hosts.js:106 ~ fastify.get ~ host_stat", host_stat)
                     hosts_stat = host_stat[0]
+                    console.log("🚀 ~ file: hosts.js:108 ~ fastify.get ~ host_stat", host_stat)
                     let hostInfo = ""
                     for(let el of Object.keys(hosts_stat))
                         hostInfo += el+': '+hosts_stat[el] + ', '
