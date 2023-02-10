@@ -1,4 +1,3 @@
-const YAML = require('yaml')
 
 module.exports = function (fastify, opts, done) {
     fastify.post('/register', async (req, reply)=>{
@@ -88,18 +87,28 @@ module.exports = function (fastify, opts, done) {
 
     fastify.get('/get', async (req, reply)=>{
         const hosts_coll = fastify.mongo.db.collection('hosts')
+        const hosts_stats_coll = fastify.mongo.db.collection('hosts_stat')
+        const containersColl = fastify.mongo.db.collection('containers')
         console.log(req.client_id)
         try{
             const hosts = await hosts_coll.find({client_id: req.client_id}).toArray()
-            for(let i =0; i < hosts.length; i++)
-                if(hosts[i].stats){
+            
+            for(let i =0; i < hosts.length; i++){
+                const host_stat = await hosts_stats_coll.findOne({host_id: new fastify.mongo.ObjectId(hosts[i]._id)}).sort({created: -1})
+                for(let k=0; k < hosts[i].configs.length; k ++){
+                    const container = await containersColl.findOne({container_id: hosts[i].configs[k].id, client_id: client_id})
+                    if(container)
+                        hosts[i].configs[k].status = container.status
+                }
+                if(host_stat){
                     let hostInfo = ""
-                    for(let el of Object.keys(hosts[i].stats))
-                        hostInfo += el+': '+hosts[i].stats[el] + ', '
+                    for(let el of Object.keys(host_stat))
+                        hostInfo += el+': '+host_stat[el] + ', '
                     hostInfo = hostInfo.slice(0, hostInfo.length-2)
                     hosts[i].info = hostInfo
+                    hosts[i].stats = host_stat
 
-                }
+                }}
             console.log(hosts)
             return reply.send(hosts)
         }catch (e) {
