@@ -94,7 +94,7 @@ module.exports = function (fastify, opts, done) {
             const hosts = await hosts_coll.find({client_id: req.client_id}).toArray()
             
             for(let i =0; i < hosts.length; i++){
-                const host_stat = await hosts_stats_coll.find({host_id: new fastify.mongo.ObjectId(hosts[i]._id)}).sort({created: -1}).limit(1).toArray()
+                const host_stat = await hosts_stats_coll.find({host_id: new fastify.mongo.ObjectId(hosts[i]._id)}, {projection:{ _id: 0 }}).sort({created: -1}).limit(1).toArray()
                 console.log("🚀 ~ file: hosts.js:98 ~ fastify.get ~ host_stat", host_stat)
                 
                 for(let k=0; k < hosts[i].configs.length; k ++){ 
