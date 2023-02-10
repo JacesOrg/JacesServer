@@ -94,19 +94,20 @@ module.exports = function (fastify, opts, done) {
             const hosts = await hosts_coll.find({client_id: req.client_id}).toArray()
             
             for(let i =0; i < hosts.length; i++){
-                const host_stat = await hosts_stats_coll.find({host_id: new fastify.mongo.ObjectId(hosts[i]._id)}).sort({created: -1}).limit(1)
+                const host_stat = await hosts_stats_coll.find({host_id: new fastify.mongo.ObjectId(hosts[i]._id)}).sort({created: -1}).limit(1).toArray()
                 for(let k=0; k < hosts[i].configs.length; k ++){
                     const container = await containersColl.findOne({container_id: hosts[i].configs[k].id, client_id: req.client_id})
                     if(container)
                         hosts[i].configs[k].status = container.status
                 }
                 if(host_stat){
+                    hosts_stat = host_stat[0]
                     let hostInfo = ""
-                    for(let el of Object.keys(host_stat))
-                        hostInfo += el+': '+host_stat[el] + ', '
+                    for(let el of Object.keys(hosts_stat))
+                        hostInfo += el+': '+hosts_stat[el] + ', '
                     hostInfo = hostInfo.slice(0, hostInfo.length-2)
                     hosts[i].info = hostInfo
-                    hosts[i].stats = host_stat
+                    hosts[i].stats = hosts_stat
 
                 }}
             console.log(hosts)
