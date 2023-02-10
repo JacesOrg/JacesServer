@@ -96,7 +96,7 @@ module.exports = function (fastify, opts, done) {
             for(let i =0; i < hosts.length; i++){
                 const host_stat = await hosts_stats_coll.find({host_id: new fastify.mongo.ObjectId(hosts[i]._id)}).sort({created: -1}).limit(1)
                 for(let k=0; k < hosts[i].configs.length; k ++){
-                    const container = await containersColl.findOne({container_id: hosts[i].configs[k].id, client_id: client_id})
+                    const container = await containersColl.findOne({container_id: hosts[i].configs[k].id, client_id: req.client_id})
                     if(container)
                         hosts[i].configs[k].status = container.status
                 }
