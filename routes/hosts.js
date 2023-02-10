@@ -104,6 +104,8 @@ module.exports = function (fastify, opts, done) {
                     console.log("🚀 ~ file: hosts.js:102 ~ fastify.get ~ container", container)
                     if(container)
                         hosts[i].configs[k].status = container.status
+                    else
+                        hosts[i].configs[k].status = "Offline"
                 }
                 if(host_stat && host_stat.length > 0){
                     console.log("🚀 ~ file: hosts.js:106 ~ fastify.get ~ host_stat", host_stat)
