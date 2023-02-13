@@ -118,5 +118,17 @@ module.exports = function (fastify, opts, done) {
             return reply.status(500).send({success: false, message: error.message})
         }
     })
+
+    fastify.get('/logs/get', async (req, reply)=>{
+        try{
+            const {container_id} = req.query;
+            const logsColl = fastify.mongo.db.collection('containers_logs')
+            const logs = await logsColl.findOne({container_id: container_id})
+            return reply.send(logs)
+        }catch (e) {
+            console.log(e)
+            return reply.send({success: false, message:  e.message})
+        }
+    })
     done()
 }
