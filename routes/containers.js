@@ -39,11 +39,11 @@ module.exports = function (fastify, opts, done) {
         }
     })
 
-    fastify.get('/actions/get/:host_id', async (req, reply)=>{
+    fastify.get('/actions/get/:conf_id', async (req, reply)=>{
         try{
-            const host_id = req.params.host_id;
+            const conf_id = req.params.host_id;
             const actionColl = fastify.mongo.db.collection('actions')
-            const actions = await actionColl.find({client_id: req.client_id, host_id: host_id, status: "NEW"}).sort({created: 1}).toArray()
+            const actions = await actionColl.find({client_id: req.client_id, conf_id: conf_id, status: "NEW"}).sort({created: 1}).toArray()
             return reply.send(actions)
         }catch (e) {
             console.log(e)
@@ -79,7 +79,7 @@ module.exports = function (fastify, opts, done) {
         }
     })
 
-    fastify.get('/actions/update/:action_id', async (req, reply)=>{
+    fastify.post('/actions/update/:action_id', async (req, reply)=>{
         try{
             const action_id = req.params.action_id;
             const {status, message} = req.body
