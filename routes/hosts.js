@@ -167,7 +167,7 @@ module.exports = function (fastify, opts, done) {
             const host_id = req.params.id
             const host = await hostColl.findOne({_id: new fastify.mongo.ObjectId(host_id)})
             if(!host) return reply.status(404).send({success: false, message: 'Host not found'})
-            await hostColl.delete({_id: new fastify.mongo.ObjectId(host)})
+            await hostColl.deleteOne({_id: new fastify.mongo.ObjectId(host)})
             return reply.status(200).send({success: true})
         }catch(e){
             console.log(e);
