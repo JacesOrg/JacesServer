@@ -60,12 +60,7 @@ module.exports = function (fastify, opts, done) {
             action.status = "NEW"
             const actionColl = fastify.mongo.db.collection('actions')
             const actions = await actionColl.insertOne(action)
-            for (let index = 0; index < 5000; index++) {
-                let res = await actionColl.findOne({_id: new fastify.mongo.ObjectId(actions.insertedId)})
-                if (res.status != "NEW")
-                    return reply.send({success: true, status: res.status, message: res.message})
-                
-            }
+        
             return reply.send({success: true, id: actions.insertedId})
         }catch (e) {
             console.log(e)
