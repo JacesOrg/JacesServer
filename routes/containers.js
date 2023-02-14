@@ -41,10 +41,9 @@ module.exports = function (fastify, opts, done) {
 
     fastify.get('/actions/get/:conf_id', async (req, reply)=>{
         try{
-            const conf_id = req.params.host_id;
+            const conf_id = req.params.conf_id;
             const actionColl = fastify.mongo.db.collection('actions')
-            console.log(conf_id);
-            const actions = await actionColl.find({conf_id: conf_id, status: "NEW"}).sort({created: 1}).toArray()
+            const actions = await actionColl.find({client_id: req.client_id, conf_id: conf_id, status: "NEW"}).sort({created: 1}).toArray()
             return reply.send(actions)
         }catch (e) {
             console.log(e)
