@@ -71,6 +71,7 @@ module.exports = function (fastify, opts, done) {
     fastify.get('/actions/status/:action_id', async (req, reply)=>{
         try{
             const action_id = req.params.action_id;
+            console.log(action_id);
             const actionColl = fastify.mongo.db.collection('actions')
             const action = await actionColl.findOne({_id: new fastify.mongo.ObjectId(action_id)})
             return reply.send({success: true, status: action.status, message: action.message})
