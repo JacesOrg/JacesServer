@@ -3,6 +3,7 @@ const {pipeline} = require('stream')
 const util = require('util')
 const pump = util.promisify(pipeline)
 const path = require('path')
+const md5File = require('md5-file')
 
 module.exports = function (fastify, opts, done) {
 
@@ -100,7 +101,9 @@ module.exports = function (fastify, opts, done) {
             const filesColl = fastify.mongo.db.collection('files')
             const {image} = req.query
             const fileObj = await filesColl.find({image: image}).sort({created: -1}).toArray()
+            const md5sum = await md5File(fileObj[0].filename)
             reply.header('Content-Disposition', fileObj[0].filename)
+            reply.header('MD5-Sum', md5sum)
             return reply.sendFile(fileObj[0].filename)
         } catch (error) {
             console.log(error);

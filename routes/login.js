@@ -4,7 +4,7 @@ module.exports = function (fastify, opts, done) {
             const {client_id} = req.body;
             const clients = fastify.mongo.db.collection('clients')
             const id = await clients.findOne({client_id: client_id})
-            if(id) {
+            if(id && Object.keys(id).length > 0) {
                 const token = fastify.jwt.sign({client_id: client_id})
                 return reply.send({token: token})
             }else{

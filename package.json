@@ -14,9 +14,12 @@
     "@fastify/mongodb": "^6.2.0",
     "@fastify/multipart": "^7.4.0",
     "@fastify/static": "^6.8.0",
+    "@fastify/websocket": "^7.1.2",
     "dotenv": "^16.0.3",
     "fastify": "^4.11.0",
     "fastify-multipart": "^5.4.0",
+    "md5-file": "^5.0.0",
+    "ws": "^8.12.1",
     "yaml": "^2.2.1"
   }
 }

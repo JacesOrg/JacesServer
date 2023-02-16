@@ -25,6 +25,8 @@ fastify.register(require('@fastify/mongodb'),{
     url: `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}/${process.env.MONGO_DB}`
 })
 
+fastify.register(require('@fastify/websocket'))
+
 fastify.register(require('@fastify/jwt'), {
     secret: 'b1gOne5ecretS'
 })
@@ -66,6 +68,7 @@ fastify.register(require('./routes/login'), {prefix: 'api/clients'})
 fastify.register(require('./routes/hosts'), {prefix: 'api/pvt/hosts'})
 fastify.register(require('./routes/configs'), {prefix: 'api/admin/configs'})
 fastify.register(require('./routes/containers'), {prefix: 'api/pvt/containers'})
+fastify.register(require('./routes/wshandler'), {prefix: 'api/ws'})
 
 const start = async () => {
     try {
