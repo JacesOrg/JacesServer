@@ -32,7 +32,7 @@ fastify.register(require('@fastify/jwt'), {
 })
 
 fastify.addHook('onRequest', (req, reply, done)=>{
-    if(req.url.indexOf('/pvt/') != -1){
+    if(req.url.indexOf('/pvt/') !== -1 || req.url.indexOf('/ws/') !== -1){
         let authHeader;
         for(let header of Object.keys(req.headers) ) {
             console.log(header.toUpperCase())
@@ -48,6 +48,7 @@ fastify.addHook('onRequest', (req, reply, done)=>{
                         return reply.status(401).send("Invalid token")
                     console.log(token_obj)
                     req.client_id = token_obj.client_id
+                    req.host_id = token_obj.host_id
                     done()
                     return
                 }catch (e) {
