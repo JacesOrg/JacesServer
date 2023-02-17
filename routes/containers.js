@@ -4,6 +4,7 @@ const util = require('util')
 const pump = util.promisify(pipeline)
 const path = require('path')
 const md5File = require('md5-file')
+const clients = require('../lib/processWsRequest')
 
 module.exports = function (fastify, opts, done) {
 
@@ -118,6 +119,26 @@ module.exports = function (fastify, opts, done) {
             const containerColl = fastify.mongo.db.collection('containers_logs') 
             await containerColl.updateOne({container_id: container_id}, {$set:{log: log}}, {upsert: true})
             return reply.send({success: true})
+        } catch (error) {
+            console.log(error);
+            return reply.status(500).send({success: false, message: error.message})
+        }
+    })
+
+    fastify.post('/create', async (req, reply)=>{
+        try {
+            const {host_id} = req.body
+            const hostColl = fastify.mongo.db.collection('hosts')
+            await hostColl.updateOne({client_id: req.client_id, _id: new fastify.mongo.ObjectId(host_id)}, {$push: {configs: req.body.config} })
+        } catch (error) {
+            console.log(error);
+            return reply.status(500).send({success: false, message: error.message})
+        }
+    })
+
+    fastify.post('/update', async (req, reply)=>{
+        try {
+            
         } catch (error) {
             console.log(error);
             return reply.status(500).send({success: false, message: error.message})
