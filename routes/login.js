@@ -2,6 +2,7 @@ module.exports = function (fastify, opts, done) {
     fastify.post('/login', async (req, reply)=>{
         try{
             const {client_id, host_id} = req.body;
+            console.log(req.body);
             const clients = fastify.mongo.db.collection('clients')
             const id = await clients.findOne({client_id: client_id})
             if(id && Object.keys(id).length > 0) {
