@@ -138,7 +138,16 @@ module.exports = function (fastify, opts, done) {
 
     fastify.post('/update', async (req, reply)=>{
         try {
-            
+            const {host_id} = req.body
+            const hostColl = fastify.mongo.db.collection('hosts')
+            const host = await hostColl.findOne({client_id: req.client_id, _id: new fastify.mongo.ObjectId(host_id)})
+            for (let index = 0; index < host.configs.length; index++) {
+                if(host.configs[index].id === req.body.config.id)
+                host.configs[index] = req.body.config
+                break               
+            }
+            await hostColl.updateOne({client_id: req.client_id, _id: new fastify.mongo.ObjectId(host_id)}, {$set:{configs: host.configs}})
+            return reply.send({success: true})
         } catch (error) {
             console.log(error);
             return reply.status(500).send({success: false, message: error.message})
