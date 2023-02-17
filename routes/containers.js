@@ -130,6 +130,9 @@ module.exports = function (fastify, opts, done) {
             const {host_id} = req.body
             const hostColl = fastify.mongo.db.collection('hosts')
             await hostColl.updateOne({client_id: req.client_id, _id: new fastify.mongo.ObjectId(host_id)}, {$push: {configs: req.body.config} })
+            if(clients[req.body.hostname])
+                clients[req.body.hostname].socket.send(JSON.stringify({type: 'NEWCONF', config: req.body.config}))
+            return reply.send({success: true})
         } catch (error) {
             console.log(error);
             return reply.status(500).send({success: false, message: error.message})
@@ -147,6 +150,9 @@ module.exports = function (fastify, opts, done) {
                 break               
             }
             await hostColl.updateOne({client_id: req.client_id, _id: new fastify.mongo.ObjectId(host_id)}, {$set:{configs: host.configs}})
+            console.log(clients[req.body.hostname]);
+            if(clients[req.body.hostname])
+                clients[req.body.hostname].socket.send(JSON.stringify({type: 'NEWCONF', config: req.body.config}))
             return reply.send({success: true})
         } catch (error) {
             console.log(error);
