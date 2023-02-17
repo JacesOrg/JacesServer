@@ -22,7 +22,11 @@ module.exports = (fastify, opts, done) => {
                     const to_send = []
                     const hostColl = fastify.mongo.db.collection('hosts');
                     const host = hostColl.findOne({_id: new fastify.mongo.ObjectId(msg.host_id)})
-                    for(let )
+                    for(let conf of host.configs)
+                        if(conf.status == 'UPDATE')
+                            to_send.push(conf)
+                    if(to_send.length > 0)
+                        conn.socket.send(JSON.stringify({type: 'updateConf', configs: to_send}))
                 }
             } catch (error) {
                 console.log(error);
