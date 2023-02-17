@@ -18,6 +18,11 @@ module.exports = (fastify, opts, done) => {
                     stat_obj.host_id = new fastify.mongo.ObjectId(msg.hostStats.host_id)
                     await statColl.insertOne(stat_obj)
                     conn.socket.send(JSON.stringify({success: true, message: 'Stats saved successfully'}))
+                }else if(msg.type === 'updateConfigs'){
+                    const to_send = []
+                    const hostColl = fastify.mongo.db.collection('hosts');
+                    const host = hostColl.findOne({_id: new fastify.mongo.ObjectId(msg.host_id)})
+                    for(let )
                 }
             } catch (error) {
                 console.log(error);
