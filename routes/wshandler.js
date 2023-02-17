@@ -21,10 +21,10 @@ module.exports = (fastify, opts, done) => {
                 }else if(msg.type === 'updateConfigs'){
                     const to_send = []
                     const hostColl = fastify.mongo.db.collection('hosts');
-                    const host = hostColl.findOne({_id: new fastify.mongo.ObjectId(msg.host_id)})
+                    const host = await hostColl.findOne({_id: new fastify.mongo.ObjectId(msg.host_id)})
                     console.log(host);
                     for(let conf of host.configs)
-                        if(conf.status == 'UPDATE')
+                        if(conf.status == 'UPDATE' || conf.status == 'NEW')
                             to_send.push(conf)
                     if(to_send.length > 0)
                         conn.socket.send(JSON.stringify({type: 'updateConf', configs: to_send}))
