@@ -1,4 +1,5 @@
 const clients = require('../lib/processWsRequest')
+const { handleSaveStats, handleUpdateContainerStatus, handleUpdateConfigStatus } = require('../lib/wsutils')
 module.exports = (fastify, opts, done) => {
     fastify.get('/receive', {websocket: true}, async (conn, req) => {
         clients[req.host_id] = conn
@@ -10,14 +11,11 @@ module.exports = (fastify, opts, done) => {
                 const msg = JSON.parse(message.toString())
                 console.log(message.toString());
                 if(msg.type === 'hostStat'){
-                    const hostColl = fastify.mongo.db.collection('hosts');
-                    const host = await hostColl.findOne({_id: new fastify.mongo.ObjectId(msg.hostStats.host_id)})
-                    const statColl = fastify.mongo.db.collection('hosts_stat');
-                    const stat_obj =msg.hostStats 
-                    stat_obj.created = new Date()
-                    stat_obj.host_id = new fastify.mongo.ObjectId(msg.hostStats.host_id)
-                    await statColl.insertOne(stat_obj)
-                    conn.socket.send(JSON.stringify({success: true, message: 'Stats saved successfully'}))
+                    const saveResult = await handleSaveStats(fastify.mongo, msg.hostStats.host_id, msg.hostStats)
+                    if(saveResult)
+                        conn.socket.send(JSON.stringify({type: 'saveStatsMessage', success: true, message: 'Stats saved successfully'}))
+                    else
+                        conn.socket.send(JSON.stringify({type: 'saveStatsMessage', success: false, message: 'Error saving stats'}))
                 }else if(msg.type === 'updateConfigs'){
                     const to_send = []
                     const hostColl = fastify.mongo.db.collection('hosts');
@@ -28,8 +26,13 @@ module.exports = (fastify, opts, done) => {
                             to_send.push(conf)
                     if(to_send.length > 0)
                         conn.socket.send(JSON.stringify({type: 'updateConf', configs: to_send}))
+                }else if(msg.type === 'containerStatus'){
+                    await handleUpdateContainerStatus(fastify.mongo, msg.host_id, msg.name, msg.status)
+                }else if(msg.type === 'updateConf'){
+                    await handleUpdateConfigStatus(fastify.mongo, msg.host_id, msg.container_id, msg.success, msg.processing)
                 }
             } catch (error) {
+                console.log("WTF");
                 console.log(error);
                 conn.socket.send(JSON.stringify({success: false, message: error.message})) 
             }
