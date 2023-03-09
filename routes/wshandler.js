@@ -9,9 +9,8 @@ module.exports = (fastify, opts, done) => {
             try {
                 console.log('Message received from', req.host_id); 
                 const msg = JSON.parse(message.toString())
-                console.log(message.toString());
                 if(msg.type === 'hostStat'){
-                    const saveResult = await handleSaveStats(fastify.mongo, msg.hostStats.host_id, msg.hostStats)
+                    const saveResult = await handleSaveStats(fastify.mongo, msg.host_id, msg.hostStats)
                     if(saveResult)
                         conn.socket.send(JSON.stringify({type: 'saveStatsMessage', success: true, message: 'Stats saved successfully'}))
                     else

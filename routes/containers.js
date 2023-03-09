@@ -61,8 +61,8 @@ module.exports = function (fastify, opts, done) {
             action.host_id = host_id
             action.status = "NEW"
             const actionColl = fastify.mongo.db.collection('actions')
-            const actions = await actionColl.insertOne(action)
-        
+            const actions = await actionColl.insertOne(action) 
+            clients[req.host_id].socket.send(JSON.stringify({type: 'performAction', config: req.body.config}))
             return reply.send({success: true, id: actions.insertedId})
         }catch (e) {
             console.log(e)
@@ -130,8 +130,10 @@ module.exports = function (fastify, opts, done) {
             const {host_id} = req.body
             const hostColl = fastify.mongo.db.collection('hosts')
             await hostColl.updateOne({client_id: req.client_id, _id: new fastify.mongo.ObjectId(host_id)}, {$push: {configs: req.body.config} })
-            if(clients[req.body.hostname])
-                clients[req.body.hostname].socket.send(JSON.stringify({type: 'NEWCONF', config: req.body.config}))
+            if(clients[req.body.hostname]){
+                console.log('Sending config to host');
+                clients[req.body.hostname].socket.send(JSON.stringify({type: 'updateConf', config: req.body.config}))
+            }
             return reply.send({success: true})
         } catch (error) {
             console.log(error);
@@ -151,8 +153,9 @@ module.exports = function (fastify, opts, done) {
             }
             await hostColl.updateOne({client_id: req.client_id, _id: new fastify.mongo.ObjectId(host_id)}, {$set:{configs: host.configs}})
             console.log(clients[req.body.hostname]);
+            console.log(clients);
             if(clients[req.body.hostname])
-                clients[req.body.hostname].socket.send(JSON.stringify({type: 'NEWCONF', config: req.body.config}))
+                clients[req.body.hostname].socket.send(JSON.stringify({type: 'updateConf', config: req.body.config}))
             return reply.send({success: true})
         } catch (error) {
             console.log(error);

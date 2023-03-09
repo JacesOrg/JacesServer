@@ -19,6 +19,7 @@
     "fastify": "^4.11.0",
     "fastify-multipart": "^5.4.0",
     "md5-file": "^5.0.0",
+    "mongodb": "^5.1.0",
     "ws": "^8.12.1",
     "yaml": "^2.2.1"
   }
