@@ -29,6 +29,8 @@ module.exports = (fastify, opts, done) => {
                     await handleUpdateContainerStatus(fastify.mongo, msg.host_id, msg.name, msg.status)
                 }else if(msg.type === 'updateConf'){
                     await handleUpdateConfigStatus(fastify.mongo, msg.host_id, msg.container_id, msg.success, msg.processing)
+                }else if(msg.type == 'containerStats'){
+                    
                 }
             } catch (error) {
                 console.log("WTF");
