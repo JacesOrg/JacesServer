@@ -55,6 +55,7 @@ module.exports = function (fastify, opts, done) {
 
     fastify.post('/actions/set/:host_id', async (req, reply)=>{
         try{
+            console.log(req.body.config);
             const host_id = req.params.host_id;
             const {action} = req.body
             action.client_id = req.client_id
