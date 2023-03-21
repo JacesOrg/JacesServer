@@ -56,13 +56,13 @@ module.exports = function (fastify, opts, done) {
     fastify.post('/actions/set/:host_id', async (req, reply)=>{
         try{
             const host_id = req.params.host_id;
-            const action = req.body
+            const {action} = req.body
             action.client_id = req.client_id
             action.host_id = host_id
             action.status = "NEW"
             const actionColl = fastify.mongo.db.collection('actions')
             const actions = await actionColl.insertOne(action) 
-            clients[req.host_id].socket.send(JSON.stringify({type: 'performAction', config: req.body.config}))
+            clients[req.host_id].socket.send(JSON.stringify({type: 'performAction', config: req.body.config, action: action}))
             return reply.send({success: true, id: actions.insertedId})
         }catch (e) {
             console.log(e)
